@@ -10,6 +10,8 @@ import {
 
 import Icon from 'react-native-vector-icons/Feather';
 
+import { useNavigation } from '@react-navigation/native';
+
 import {
   Container,
   Title,
@@ -24,6 +26,7 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 const SignIn: React.FC = () => {
+  const navigation = useNavigation();
   return (
     <>
       <KeyboardAvoidingView
@@ -39,7 +42,7 @@ const SignIn: React.FC = () => {
           <Container>
             <Image source={logoImg} />
             <View>
-              <Title>Faça seu logon</Title>
+              <Title>Faça seu login</Title>
             </View>
 
             <Input name="email" icon="mail" placeholder="E-mail" />
@@ -53,7 +56,7 @@ const SignIn: React.FC = () => {
             </Button>
             <ForgotPassword
               onPress={() => {
-                console.log('jaca');
+                navigation.navigate('SignUp');
               }}
             >
               <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
@@ -61,7 +64,7 @@ const SignIn: React.FC = () => {
           </Container>
           <CreateAccountButton
             onPress={() => {
-              console.log('jaca');
+              navigation.navigate('SignUp');
             }}
           >
             <Icon name="log-in" size={20} color="#fd9000" />
