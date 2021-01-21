@@ -20,7 +20,7 @@ import { string } from 'yup/lib/locale';
 
 import logoImg from '../../assets/logo.png';
 
-import api from '../../service/api';
+import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
@@ -40,48 +40,51 @@ const SignUp: React.FC = () => {
   const emailTextInput = useRef<TextInput>(null);
   const passwordTextInput = useRef<TextInput>(null);
 
-  const handleSubmitForm = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('E-mail no formato inválido'),
-        password: Yup.string()
-          .required('Senha obrigatória')
-          .min(6, 'Mínimo 6 digitos'),
-      });
+  const handleSubmitForm = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('E-mail no formato inválido'),
+          password: Yup.string()
+            .required('Senha obrigatória')
+            .min(6, 'Mínimo 6 digitos'),
+        });
 
-      const { email, password } = data;
+        const { email, password } = data;
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-      // await signIn({
-      //   email,
-      //   password,
-      // });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+        // await signIn({
+        //   email,
+        //   password,
+        // });
 
-      Alert.alert(
-        'Cadastro realizado com successo',
-        'Você já poide fazer login na aplicação',
-      );
-      navigation.goBack();
-      // Alert.alert();
-      await api.post('/users', data);
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(error);
-        formRef.current?.setErrors(errors);
-        return;
+        Alert.alert(
+          'Cadastro realizado com successo',
+          'Você já poide fazer login na aplicação',
+        );
+        navigation.goBack();
+        // Alert.alert();
+        await api.post('/users', data);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        console.log(error);
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu um erro ao fazer login, cheque as credenciais',
+        );
       }
-      console.log(error);
-      Alert.alert(
-        'Erro na autenticação',
-        'Ocorreu um erro ao fazer login, cheque as credenciais',
-      );
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     <>

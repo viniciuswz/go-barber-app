@@ -2,6 +2,7 @@ import React, { useCallback, useRef } from 'react';
 
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+
 import * as Yup from 'yup';
 
 import {
@@ -28,11 +29,13 @@ import {
 } from './styles';
 import logoImg from '../../assets/logo.png';
 
+import { useAuth } from '../../hooks/Auth';
+
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import api from '../../service/api';
+import api from '../../services/api';
 
 interface SignInFormData {
   email: string;
@@ -43,44 +46,48 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
+  const { signIn } = useAuth();
 
-  const handleSubmitForm = useCallback(async (data: SignInFormData) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('E-mail no formato inválido'),
-        password: Yup.string()
-          .required('Senha obrigatória')
-          .min(6, 'Mínimo 6 digitos'),
-      });
+  const handleSubmitForm = useCallback(
+    async (data: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('E-mail no formato inválido'),
+          password: Yup.string()
+            .required('Senha obrigatória')
+            .min(6, 'Mínimo 6 digitos'),
+        });
 
-      const { email, password } = data;
+        const { email, password } = data;
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-      // await signIn({
-      //   email,
-      //   password,
-      // });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+        await signIn({
+          email,
+          password,
+        });
 
-      // history.push('/dashboard');
-      // Alert.alert();
-      await api.post('/users', data);
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(error);
-        formRef.current?.setErrors(errors);
-        return;
+        // history.push('/dashboard');
+        // Alert.alert();
+        await api.post('/sessions', data);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu um erro ao fazer login, cheque as credenciais',
+        );
       }
-      Alert.alert(
-        'Erro na autenticação',
-        'Ocorreu um erro ao fazer login, cheque as credenciais',
-      );
-    }
-  }, []);
+    },
+    [SignIn],
+  );
 
   return (
     <>
