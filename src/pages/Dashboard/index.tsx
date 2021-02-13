@@ -41,11 +41,12 @@ const Dashboard: React.FC = () => {
 
   const navigateToProfile = useCallback(() => {
     navigate('Profile');
+    // signOut();
   }, [navigate]);
 
   const navigateToCreateAppointment = useCallback(
-    (providerId: string) => {
-      navigate('CreateAppointment', { providerId });
+    (provider_id: string) => {
+      navigate('CreateAppointment', { provider_id });
       // signOut();
     },
     [navigate],
